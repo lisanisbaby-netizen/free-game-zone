@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Car Dodger - ফ্রি গেম জোন</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background: #0f172a;
+      color: #f8fafc;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 12px;
+    }
+
+    .top-bar {
+      width: 460px;
+      max-width: 100%;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      background: #1e293b;
+      padding: 10px 14px;
+      border-radius: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .back-btn {
+      text-decoration: none;
+      color: #f8fafc;
+      background: #334155;
+      padding: 7px 14px;
+      border-radius: 7px;
+      font-size: 0.9rem;
+      transition: background 0.2s;
+    }
+
+    .back-btn:hover {
+      background: #475569;
+    }
+
+    .scores-wrapper {
+      display: flex;
+      gap: 12px;
+      font-size: 0.95rem;
+      font-weight: bold;
+    }
+
+    .score-box {
+      color: #4ade80;
+    }
+
+    .high-score-box {
+      color: #facc15;
+    }
+
+    .speed-box {
+      color: #38bdf8;
+    }
+
+    canvas {
+      background: #1e293b;
+      border: 3px solid #f59e0b;
+      border-radius: 12px;
+      max-width: 100%;
+      height: auto;
+      touch-action: none;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5);
+    }
+
+    .touch-controls {
+      width: 100%;
+      max-width: 460px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      user-select: none;
+      touch-action: none;
+    }
+
+    .steer-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .steer-btn {
+      height: 58px;
+      border-radius: 12px;
+      border: 1px solid #475569;
+      background: #1e293b;
+      color: #f8fafc;
+      font-size: 1.25rem;
+      font-weight: bold;
+      cursor: pointer;
+      touch-action: none;
+      box-shadow: 0 4px 0 #0b1120;
+    }
+
+    .steer-btn:active {
+      transform: translateY(2px);
+      background: #334155;
+      border-color: #f59e0b;
+    }
+
+    .car-util-row {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .util-btn {
+      padding: 8px 14px;
+      border-radius: 8px;
+      border: 1px solid #475569;
+      background: #1e293b;
+      color: #38bdf8;
+      font-size: 0.85rem;
+      font-weight: bold;
+      cursor: pointer;
+      touch-action: none;
+    }
+
+    .util-btn:active {
+      background: #334155;
+    }
+
+    .bottom-controls {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      max-width: 460px;
+    }
+
+    .controls-info {
+      color: #94a3b8;
+      font-size: 0.84rem;
+      text-align: center;
+      line-height: 1.45;
+    }
+
+    .restart-btn {
+      background: #f59e0b;
+      color: #1e1b4b;
+      border: none;
+      padding: 9px 16px;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+      font-size: 0.9rem;
+      transition: background 0.2s;
+    }
+
+    .restart-btn:hover {
+      background: #fbbf24;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="top-bar">
+    <a href="index.html" class="back-btn">← হোম পেজ</a>
+
+    <div class="scores-wrapper">
+      <div class="speed-box">গতি: <span id="speedDisplay">1.0x</span></div>
+      <div class="score-box">স্কোর: <span id="score">0</span></div>
+      <div class="high-score-box">সেরা: <span id="highScore">0</span></div>
+    </div>
+  </div>
+
+  <canvas id="gameCanvas" width="460" height="620"></canvas>
+
+  <!-- ফোন ও টাচ কন্ট্রোল -->
+  <div class="touch-controls" aria-label="Car Touch Controls">
+    <div class="steer-row">
+      <button type="button" class="steer-btn" id="btnCarLeft">◀ বাম</button>
+      <button type="button" class="steer-btn" id="btnCarRight">ডান ▶</button>
+    </div>
+    <div class="car-util-row">
+      <button type="button" class="util-btn" id="btnCarSlow">গতি -</button>
+      <button type="button" class="util-btn" id="btnCarFast">গতি +</button>
+      <button type="button" class="util-btn" id="btnCarPause">বিরতি</button>
+    </div>
+  </div>
+
+  <div class="bottom-controls">
+    <div class="controls-info">
+      কিবোর্ড: <b>Arrow Left/Right</b> বা <b>A/D</b> | গতি: <b>W/S</b> বা <b>+ / -</b> | রিস্টার্ট: <b>Enter</b>
+    </div>
+    <button type="button" class="restart-btn" onclick="resetGame()">নতুন করে শুরু করুন (Enter)</button>
+  </div>
+
+  <script>
+    const canvas = document.getElementById("gameCanvas");
+    const ctx = canvas.getContext("2d");
+    const scoreEl = document.getElementById("score");
+    const highScoreEl = document.getElementById("highScore");
+    const speedDisplayEl = document.getElementById("speedDisplay");
+
+    const roadMargin = 40;
+    const roadWidth = canvas.width - roadMargin * 2;
+    const laneCount = 3;
+    const laneWidth = roadWidth / laneCount;
+
+    let player;
+    let enemies = [];
+    let coins = [];
+    let roadLines = [];
+    let score = 0;
+    let highScore = parseInt(localStorage.getItem("carDodgerHighScore") || "0", 10);
+    let baseSpeed = 5;
+    let speedMultiplier = 1;
+    let isGameOver = false;
+    let isPaused = false;
+    let animationId;
+    let frameCount = 0;
+
+    const keys = {
+      left: false,
+      right: false
+    };
+
+    highScoreEl.textContent = highScore;
+
+    function getLaneCenterX(laneIndex, objWidth) {
+      return roadMargin + laneIndex * laneWidth + (laneWidth - objWidth) / 2;
+    }
+
+    function initGame() {
+      const carW = 46;
+      const carH = 82;
+
+      player = {
+        x: getLaneCenterX(1, carW),
+        y: canvas.height - carH - 24,
+        width: carW,
+        height: carH,
+        speed: 7,
+        color: "#22c55e"
+      };
+
+      enemies = [];
+      coins = [];
+      roadLines = [];
+      for (let y = 0; y < canvas.height + 80; y += 80) {
+        roadLines.push(y);
+      }
+
+      score = 0;
+      baseSpeed = 5;
+      speedMultiplier = 1;
+      isGameOver = false;
+      isPaused = false;
+      frameCount = 0;
+
+      scoreEl.textContent = score;
+      updateSpeedLabel();
+
+      if (animationId) cancelAnimationFrame(animationId);
+      gameLoop();
+    }
+
+    function updateSpeedLabel() {
+      speedDisplayEl.textContent = speedMultiplier.toFixed(1) + "x";
+    }
+
+    function changeCarSpeed(delta) {
+      speedMultiplier = Math.max(0.6, Math.min(2.5, +(speedMultiplier + delta).toFixed(1)));
+      updateSpeedLabel();
+    }
+
+    function toggleCarPause() {
+      if (isGameOver) return;
+      isPaused = !isPaused;
+      if (isPaused) {
+        ctx.fillStyle = "rgba(2, 6, 23, 0.65)";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = "#38bdf8";
+        ctx.font = "bold 30px sans-serif";
+        ctx.textAlign = "center";
+        ctx.fillText("Paused (বিরতি)", canvas.width / 2, canvas.height / 2);
+      } else {
+        gameLoop();
+      }
+    }
+
+    function resetGame() {
+      initGame();
+    }
+
+    function spawnEnemy() {
+      const carW = 46;
+      const carH = 82;
+      const lane = Math.floor(Math.random() * laneCount);
+      const colors = ["#ef4444", "#3b82f6", "#a855f7", "#f97316", "#ec4899"];
+      const randomColor = colors[Math.floor(Math.random() * colors.length)];
+
+      for (let e of enemies) {
+        if (e.y < 140) return;
+      }
+
+      enemies.push({
+        x: getLaneCenterX(lane, carW),
+        y: -carH - 10,
+        width: carW,
+        height: carH,
+        color: randomColor
+      });
+    }
+
+    function spawnCoin() {
+      const lane = Math.floor(Math.random() * laneCount);
+      const radius = 14;
+      const cx = roadMargin + lane * laneWidth + laneWidth / 2;
+
+      for (let e of enemies) {
+        if (Math.abs(e.y - (-30)) < 130) return;
+      }
+
+      coins.push({
+        x: cx,
+        y: -25,
+        radius: radius
+      });
+    }
+
+    function drawCar(x, y, w, h, bodyColor, isPlayer) {
+      ctx.fillStyle = bodyColor;
+      ctx.beginPath();
+      ctx.roundRect(x, y, w, h, 10);
+      ctx.fill();
+
+      ctx.fillStyle = "rgba(15, 23, 42, 0.75)";
+      ctx.beginPath();
+      ctx.roundRect(x + 7, y + (isPlayer ? 22 : 18), w - 14, h - 42, 6);
+      ctx.fill();
+
+      ctx.fillStyle = isPlayer ? "#fef08a" : "#fca5a5";
+      const lightY = isPlayer ? y + 3 : y + h - 7;
+      ctx.fillRect(x + 7, lightY, 9, 4);
+      ctx.fillRect(x + w - 16, lightY, 9, 4);
+
+      ctx.fillStyle = "#020617";
+      ctx.fillRect(x - 4, y + 12, 4, 16);
+      ctx.fillRect(x + w, y + 12, 4, 16);
+      ctx.fillRect(x - 4, y + h - 28, 4, 16);
+      ctx.fillRect(x + w, y + h - 28, 4, 16);
+    }
+
+    function checkCollision(rect1, rect2) {
+      const padding = 5;
+      return (
+        rect1.x + padding < rect2.x + rect2.width - padding &&
+        rect1.x + rect1.width - padding > rect2.x + padding &&
+        rect1.y + padding < rect2.y + rect2.height - padding &&
+        rect1.y + rect1.height - padding > rect2.y + padding
+      );
+    }
+
+    function update() {
+      frameCount++;
+      const currentMoveSpeed = (baseSpeed + Math.floor(score / 150)) * speedMultiplier;
+
+      if (keys.left && player.x > roadMargin + 6) {
+        player.x -= player.speed;
+      }
+      if (keys.right && player.x + player.width < canvas.width - roadMargin - 6) {
+        player.x += player.speed;
+      }
+
+      for (let i = 0; i < roadLines.length; i++) {
+        roadLines[i] += currentMoveSpeed;
+        if (roadLines[i] > canvas.height) {
+          roadLines[i] = -60;
+        }
+      }
+
+      const spawnInterval = Math.max(32, Math.floor(75 / speedMultiplier));
+      if (frameCount % spawnInterval === 0) {
+        spawnEnemy();
+      }
+      if (frameCount % 95 === 0) {
+        spawnCoin();
+      }
+
+      for (let i = enemies.length - 1; i >= 0; i--) {
+        enemies[i].y += currentMoveSpeed;
+
+        if (checkCollision(player, enemies[i])) {
+          triggerGameOver();
+          return;
+        }
+
+        if (enemies[i].y > canvas.height + 20) {
+          enemies.splice(i, 1);
+          score += 10;
+          scoreEl.textContent = score;
+          updateHighScore();
+        }
+      }
+
+      for (let i = coins.length - 1; i >= 0; i--) {
+        coins[i].y += currentMoveSpeed;
+
+        const coinBox = {
+          x: coins[i].x - coins[i].radius,
+          y: coins[i].y - coins[i].radius,
+          width: coins[i].radius * 2,
+          height: coins[i].radius * 2
+        };
+
+        if (checkCollision(player, coinBox)) {
+          coins.splice(i, 1);
+          score += 25;
+          scoreEl.textContent = score;
+          updateHighScore();
+          continue;
+        }
+
+        if (coins[i].y > canvas.height + 30) {
+          coins.splice(i, 1);
+        }
+      }
+    }
+
+    function updateHighScore() {
+      if (score > highScore) {
+        highScore = score;
+        highScoreEl.textContent = highScore;
+        localStorage.setItem("carDodgerHighScore", highScore);
+      }
+    }
+
+    function draw() {
+      ctx.fillStyle = "#064e3b";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      ctx.fillStyle = "#1e293b";
+      ctx.fillRect(roadMargin, 0, roadWidth, canvas.height);
+
+      ctx.fillStyle = "#f59e0b";
+      ctx.fillRect(roadMargin - 5, 0, 5, canvas.height);
+      ctx.fillRect(canvas.width - roadMargin, 0, 5, canvas.height);
+
+      ctx.fillStyle = "rgba(255, 255, 255, 0.45)";
+      for (let lane = 1; lane < laneCount; lane++) {
+        const lineX = roadMargin + lane * laneWidth - 3;
+        for (let y of roadLines) {
+          ctx.fillRect(lineX, y, 6, 42);
+        }
+      }
+
+      for (let c of coins) {
+        ctx.fillStyle = "#facc15";
+        ctx.beginPath();
+        ctx.arc(c.x, c.y, c.radius, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.strokeStyle = "#ca8a04";
+        ctx.lineWidth = 3;
+        ctx.stroke();
+
+        ctx.fillStyle = "#854d0e";
+        ctx.font = "bold 14px sans-serif";
+        ctx.textAlign = "center";
+        ctx.fillText("$", c.x, c.y + 5);
+      }
+
+      for (let e of enemies) {
+        drawCar(e.x, e.y, e.width, e.height, e.color, false);
+      }
+
+      drawCar(player.x, player.y, player.width, player.height, player.color, true);
+    }
+
+    function triggerGameOver() {
+      isGameOver = true;
+      cancelAnimationFrame(animationId);
+
+      ctx.fillStyle = "rgba(2, 6, 23, 0.85)";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      ctx.fillStyle = "#f87171";
+      ctx.font = "bold 38px sans-serif";
+      ctx.textAlign = "center";
+      ctx.fillText("দুর্ঘটনা! Game Over", canvas.width / 2, canvas.height / 2 - 28);
+
+      ctx.fillStyle = "#f8fafc";
+      ctx.font = "20px sans-serif";
+      ctx.fillText("আপনার স্কোর: " + score, canvas.width / 2, canvas.height / 2 + 14);
+
+      ctx.fillStyle = "#fbbf24";
+      ctx.font = "bold 17px sans-serif";
+      ctx.fillText("Enter বা বাটন চাপুন — আবার খেলতে", canvas.width / 2, canvas.height / 2 + 54);
+    }
+
+    function gameLoop() {
+      if (isGameOver || isPaused) return;
+      update();
+      if (!isGameOver) {
+        draw();
+        animationId = requestAnimationFrame(gameLoop);
+      }
+    }
+
+    // বাম ও ডান টাচ বাটন ধরে রাখলে গাড়ি চলবে
+    function bindHoldButton(id, keyName) {
+      const btn = document.getElementById(id);
+      if (!btn) return;
+      btn.addEventListener("pointerdown", (e) => {
+        e.preventDefault();
+        keys[keyName] = true;
+      });
+      ["pointerup", "pointercancel", "pointerleave"].forEach((evt) => {
+        btn.addEventListener(evt, () => {
+          keys[keyName] = false;
+        });
+      });
+    }
+
+    bindHoldButton("btnCarLeft", "left");
+    bindHoldButton("btnCarRight", "right");
+
+    document.getElementById("btnCarSlow")?.addEventListener("pointerdown", (e) => {
+      e.preventDefault();
+      changeCarSpeed(-0.2);
+    });
+    document.getElementById("btnCarFast")?.addEventListener("pointerdown", (e) => {
+      e.preventDefault();
+      changeCarSpeed(0.2);
+    });
+    document.getElementById("btnCarPause")?.addEventListener("pointerdown", (e) => {
+      e.preventDefault();
+      toggleCarPause();
+    });
+
+    // ক্যানভাসে টাচ করে বাম বা ডানে গাড়ি সরানো
+    canvas.addEventListener("pointerdown", (e) => {
+      if (isGameOver || isPaused) return;
+      const rect = canvas.getBoundingClientRect();
+      const clickX = e.clientX - rect.left;
+      if (clickX < rect.width / 2) {
+        keys.left = true;
+        keys.right = false;
+      } else {
+        keys.right = true;
+        keys.left = false;
+      }
+    });
+
+    ["pointerup", "pointercancel", "pointerleave"].forEach((evt) => {
+      canvas.addEventListener(evt, () => {
+        keys.left = false;
+        keys.right = false;
+      });
+    });
+
+    document.addEventListener("keydown", (e) => {
+      const key = e.key.toLowerCase();
+
+      if (["arrowleft", "arrowright", "arrowup", "arrowdown", " ", "enter"].includes(key)) {
+        e.preventDefault();
+      }
+
+      if (key === "enter" && isGameOver) {
+        resetGame();
+        return;
+      }
+
+      if (key === " ") {
+        toggleCarPause();
+        return;
+      }
+
+      if (key === "arrowleft" || key === "a") keys.left = true;
+      if (key === "arrowright" || key === "d") keys.right = true;
+
+      if (key === "arrowup" || key === "w" || key === "+" || key === "=") {
+        changeCarSpeed(0.2);
+      } else if (key === "arrowdown" || key === "s" || key === "-" || key === "_") {
+        changeCarSpeed(-0.2);
+      }
+    });
+
+    document.addEventListener("keyup", (e) => {
+      const key = e.key.toLowerCase();
+      if (key === "arrowleft" || key === "a") keys.left = false;
+      if (key === "arrowright" || key === "d") keys.right = false;
+    });
+
+    initGame();
+  </script>
+
+</body>
+</html>

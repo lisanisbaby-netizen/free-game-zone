@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>আমার মিনি গেমিং জোন</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      background: linear-gradient(135deg, #0f172a, #1e293b);
+      color: #f8fafc;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      background: rgba(15, 23, 42, 0.85);
+      padding: 20px 8%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .logo {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: #38bdf8;
+    }
+
+    .hero {
+      text-align: center;
+      padding: 50px 20px 25px;
+    }
+
+    .hero h1 {
+      font-size: 2.2rem;
+      margin-bottom: 10px;
+    }
+
+    .hero p {
+      color: #94a3b8;
+      font-size: 1rem;
+    }
+
+    .games-container {
+      max-width: 1100px;
+      margin: 20px auto 60px;
+      padding: 0 20px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 24px;
+      width: 100%;
+    }
+
+    .game-card {
+      background: #1e293b;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 14px;
+      padding: 22px;
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .game-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 12px 25px rgba(0, 0, 0, 0.35);
+      border-color: #38bdf8;
+    }
+
+    .game-thumb {
+      height: 140px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #0284c7, #22c55e);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.6rem;
+      margin-bottom: 16px;
+    }
+
+    .game-card h3 {
+      font-size: 1.25rem;
+      margin-bottom: 8px;
+    }
+
+    .game-card p {
+      color: #94a3b8;
+      font-size: 0.9rem;
+      margin-bottom: 18px;
+      line-height: 1.45;
+    }
+
+    .play-btn {
+      display: inline-block;
+      text-align: center;
+      text-decoration: none;
+      background: #22c55e;
+      color: #052e16;
+      font-weight: bold;
+      padding: 10px 16px;
+      border-radius: 8px;
+      transition: background 0.2s ease;
+    }
+
+    .play-btn:hover {
+      background: #4ade80;
+    }
+
+    footer {
+      margin-top: auto;
+      text-align: center;
+      padding: 18px;
+      color: #64748b;
+      font-size: 0.85rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="logo">🎮 ফ্রি গেম জোন</div>
+    <div>PC ও মোবাইল ব্রাউজার গেমস</div>
+  </header>
+
+  <section class="hero">
+    <h1>সরাসরি ব্রাউজারে গেম খেলুন</h1>
+    <p>পিসি বা ফোন—যেকোনো ডিভাইস থেকেই সহজে গেম উপভোগ করুন</p>
+  </section>
+
+  <main class="games-container">
+    <div class="game-card">
+      <div>
+        <div class="game-thumb">🐍</div>
+        <h3>Snake Game (সাপ গেম)</h3>
+        <p>খাবার খেয়ে সাপ বড় করুন, কিন্তু নিজের শরীর বা দেয়ালে ধাক্কা খাবেন না!</p>
+      </div>
+      <a href="snake.html" class="play-btn">এখনই খেলুন</a>
+    </div>
+
+    <div class="game-card">
+      <div>
+        <div class="game-thumb" style="background: linear-gradient(135deg, #f59e0b, #ef4444);">🏎️</div>
+        <h3>Car Dodger</h3>
+        <p>সামনে আসা গাড়িগুলো এড়িয়ে দ্রুত গতিতে এগিয়ে যান।</p>
+      </div>
+      <a href="car.html" class="play-btn">এখনই খেলুন</a>
+    </div>
+
+    <div class="game-card">
+      <div>
+        <div class="game-thumb" style="background: linear-gradient(135deg, #8b5cf6, #ec4899);">🧱</div>
+        <h3>Brick Breaker</h3>
+        <p>বল দিয়ে সব ব্লক ভেঙে ফেলুন এবং হাই-স্কোর গড়ুন।</p>
+      </div>
+      <a href="brick.html" class="play-btn">এখনই খেলুন</a>
+    </div>
+
+    <div class="game-card">
+      <div>
+        <div class="game-thumb" style="background: linear-gradient(135deg, #0ea5e9, #6366f1);">🏃</div>
+        <h3>Subway Runner</h3>
+        <p>ট্র্যাক ধরে দৌড়ান, লাফ দিন ও ডুব দিয়ে বাধা এড়িয়ে কয়েন জমান।</p>
+      </div>
+      <a href="runner.html" class="play-btn">এখনই খেলুন</a>
+    </div>
+  </main>
+
+  <footer>
+    © ২০২৬ ফ্রি গেম জোন | HTML, CSS ও JavaScript দিয়ে তৈরি
+  </footer>
+
+</body>
+</html>

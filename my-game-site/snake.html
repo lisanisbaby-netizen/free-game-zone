@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Snake Game (Nokia Classic) - ফ্রি গেম জোন</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background: #0f172a;
+      color: #f8fafc;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 12px;
+    }
+
+    .top-bar {
+      width: 600px;
+      max-width: 100%;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      background: #1e293b;
+      padding: 10px 14px;
+      border-radius: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .back-btn {
+      text-decoration: none;
+      color: #f8fafc;
+      background: #334155;
+      padding: 7px 12px;
+      border-radius: 7px;
+      font-size: 0.88rem;
+      transition: background 0.2s;
+    }
+
+    .back-btn:hover {
+      background: #475569;
+    }
+
+    .controls-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .control-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: #0f172a;
+      padding: 5px 10px;
+      border-radius: 8px;
+      border: 1px solid #334155;
+    }
+
+    .control-item label {
+      font-size: 0.85rem;
+      color: #38bdf8;
+      font-weight: 600;
+    }
+
+    .control-item select {
+      background: #1e293b;
+      color: #f8fafc;
+      border: 1px solid #475569;
+      padding: 4px 6px;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      cursor: pointer;
+      outline: none;
+    }
+
+    .scores-bar {
+      width: 600px;
+      max-width: 100%;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      background: #1e293b;
+      padding: 8px 14px;
+      border-radius: 8px;
+      font-size: 0.92rem;
+      font-weight: bold;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .mode-desc {
+      color: #cbd5e1;
+      font-weight: normal;
+      font-size: 0.85rem;
+    }
+
+    .scores-wrapper {
+      display: flex;
+      gap: 14px;
+    }
+
+    .score-box {
+      color: #4ade80;
+    }
+
+    .high-score-box {
+      color: #facc15;
+    }
+
+    canvas {
+      background: #020617;
+      border: 3px solid #38bdf8;
+      border-radius: 10px;
+      max-width: 100%;
+      height: auto;
+      touch-action: none;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
+    }
+
+    .bottom-controls {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      max-width: 600px;
+    }
+
+    .controls-info {
+      color: #94a3b8;
+      font-size: 0.84rem;
+      text-align: center;
+      line-height: 1.45;
+    }
+
+    .restart-btn {
+      background: #22c55e;
+      color: #052e16;
+      border: none;
+      padding: 9px 16px;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+      font-size: 0.9rem;
+      transition: background 0.2s;
+    }
+
+    .restart-btn:hover {
+      background: #4ade80;
+    }
+
+    /* ফোন ও টাচ ডিভাইসের জন্য কন্ট্রোল প্যানেল */
+    .touch-controls {
+      width: 100%;
+      max-width: 420px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      margin-top: 4px;
+      user-select: none;
+      touch-action: none;
+    }
+
+    .dpad-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .touch-btn {
+      width: 62px;
+      height: 54px;
+      border-radius: 12px;
+      border: 1px solid #475569;
+      background: #1e293b;
+      color: #f8fafc;
+      font-size: 1.3rem;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      touch-action: none;
+      box-shadow: 0 4px 0 #0b1120;
+    }
+
+    .touch-btn:active {
+      transform: translateY(2px);
+      background: #334155;
+      border-color: #38bdf8;
+    }
+
+    .utility-row {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 8px;
+      margin-top: 2px;
+    }
+
+    .util-btn {
+      padding: 8px 14px;
+      border-radius: 8px;
+      border: 1px solid #475569;
+      background: #1e293b;
+      color: #38bdf8;
+      font-size: 0.85rem;
+      font-weight: bold;
+      cursor: pointer;
+      touch-action: none;
+    }
+
+    .util-btn:active {
+      background: #334155;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="top-bar">
+    <a href="index.html" class="back-btn">← হোম</a>
+
+    <div class="controls-group">
+      <div class="control-item">
+        <label for="modeSelect">মোড:</label>
+        <select id="modeSelect" onchange="changeMode()">
+          <option value="1" selected>Level 1: মুক্ত মাঠ (No-Wall)</option>
+          <option value="2">Level 2: চারপাশে দেয়াল</option>
+          <option value="3">Level 3: মাঝখানে বাধা (+)</option>
+          <option value="4">Level 4: টানেল গোলকধাঁধা</option>
+          <option value="5">Level 5: এক্সট্রিম (স্পিড বাড়বে)</option>
+        </select>
+      </div>
+
+      <div class="control-item">
+        <label for="speedSelect">স্পিড:</label>
+        <select id="speedSelect" onchange="changeSpeed()">
+          <option value="220">১ (খুবই ধীর)</option>
+          <option value="185">২ (ধীর)</option>
+          <option value="155" selected>৩ (সহজ)</option>
+          <option value="130">৪ (মাঝারি)</option>
+          <option value="110">৫ (স্বাভাবিক)</option>
+          <option value="90">৬ (দ্রুত)</option>
+          <option value="75">৭ (খুব দ্রুত)</option>
+          <option value="60">৮ (প্রো)</option>
+          <option value="45">৯ (নোকিয়া এক্সট্রিম)</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <div class="scores-bar">
+    <div class="mode-desc" id="modeDesc">এক পাশ দিয়ে ঢুকলে অন্য পাশ দিয়ে বের হবে</div>
+    <div class="scores-wrapper">
+      <div class="score-box">স্কোর: <span id="score">0</span></div>
+      <div class="high-score-box">হাই-স্কোর: <span id="highScore">0</span></div>
+    </div>
+  </div>
+
+  <canvas id="gameCanvas" width="600" height="600"></canvas>
+
+  <!-- ফোন ও ট্যাবলেটের টাচ বাটন -->
+  <div class="touch-controls" aria-label="Touch Controls">
+    <div class="dpad-row">
+      <button type="button" class="touch-btn" id="btnUp" aria-label="Up">▲</button>
+    </div>
+    <div class="dpad-row">
+      <button type="button" class="touch-btn" id="btnLeft" aria-label="Left">◀</button>
+      <button type="button" class="touch-btn" id="btnDown" aria-label="Down">▼</button>
+      <button type="button" class="touch-btn" id="btnRight" aria-label="Right">▶</button>
+    </div>
+    <div class="utility-row">
+      <button type="button" class="util-btn" id="btnSpeedDown">স্পিড -</button>
+      <button type="button" class="util-btn" id="btnSpeedUp">স্পিড +</button>
+      <button type="button" class="util-btn" id="btnPause">বিরতি (Space)</button>
+    </div>
+  </div>
+
+  <div class="bottom-controls">
+    <div class="controls-info">
+      কিবোর্ড: <b>Arrow / WASD</b> | স্পিড: <b>+ / -</b> বা <b>1-9</b> | বিরতি: <b>Space</b> | রিস্টার্ট: <b>Enter</b>
+    </div>
+    <button type="button" class="restart-btn" onclick="resetGame()">নতুন করে শুরু করুন (Enter)</button>
+  </div>
+
+  <script>
+    const canvas = document.getElementById("gameCanvas");
+    const ctx = canvas.getContext("2d");
+    const scoreEl = document.getElementById("score");
+    const highScoreEl = document.getElementById("highScore");
+    const speedSelect = document.getElementById("speedSelect");
+    const modeSelect = document.getElementById("modeSelect");
+    const modeDescEl = document.getElementById("modeDesc");
+
+    const gridSize = 20;
+    const tileCount = canvas.width / gridSize;
+
+    let snake;
+    let dx;
+    let dy;
+    let nextDx;
+    let nextDy;
+    let food;
+    let obstacles = [];
+    let score;
+    let currentSpeed;
+    let gameLoop;
+    let isGameOver;
+    let isPaused;
+    let speedNotice = "";
+    let speedNoticeTimer = null;
+
+    const modeDescriptions = {
+      1: "এক পাশ দিয়ে ঢুকলে অন্য পাশ দিয়ে বের হবে",
+      2: "চারপাশের দেয়ালে ধাক্কা লাগলে গেম ওভার",
+      3: "চারপাশে দেয়াল ও মাঝখানে যোগ চিহ্ন (+) বাধা",
+      4: "ভেতরের দেয়াল এড়িয়ে টানেলের ভেতর দিয়ে খেলুন",
+      5: "সব বাধা + প্রতিবার খাবার খেলে গতি বাড়বে!"
+    };
+
+    function getCurrentMode() {
+      return parseInt(modeSelect.value, 10);
+    }
+
+    function getHighScoreKey() {
+      return "snakeHighScore_mode_" + getCurrentMode();
+    }
+
+    function loadHighScore() {
+      return parseInt(localStorage.getItem(getHighScoreKey()) || "0", 10);
+    }
+
+    function saveHighScore(newScore) {
+      localStorage.setItem(getHighScoreKey(), newScore);
+    }
+
+    function showSpeedToast(text) {
+      speedNotice = text;
+      if (speedNoticeTimer) clearTimeout(speedNoticeTimer);
+      speedNoticeTimer = setTimeout(() => {
+        speedNotice = "";
+        if (!isGameOver && !isPaused) drawGame();
+      }, 1200);
+      if (!isGameOver && !isPaused) drawGame();
+    }
+
+    function setSpeedByIndex(index) {
+      const maxIndex = speedSelect.options.length - 1;
+      const clampedIndex = Math.max(0, Math.min(maxIndex, index));
+      speedSelect.selectedIndex = clampedIndex;
+      currentSpeed = parseInt(speedSelect.value, 10);
+
+      if (!isGameOver) {
+        startLoop();
+      }
+      showSpeedToast("স্পিড: " + speedSelect.options[clampedIndex].text);
+    }
+
+    function buildObstacles(mode) {
+      const blocks = [];
+
+      if (mode === 3) {
+        for (let i = 9; i <= 20; i++) {
+          blocks.push({ x: i, y: 15 });
+          blocks.push({ x: 15, y: i });
+        }
+      } else if (mode === 4) {
+        for (let x = 5; x <= 24; x++) {
+          if (x < 13 || x > 16) {
+            blocks.push({ x: x, y: 8 });
+            blocks.push({ x: x, y: 21 });
+          }
+        }
+        for (let y = 11; y <= 18; y++) {
+          blocks.push({ x: 7, y: y });
+          blocks.push({ x: 22, y: y });
+        }
+      } else if (mode === 5) {
+        for (let x = 4; x <= 11; x++) {
+          blocks.push({ x: x, y: 6 });
+          blocks.push({ x: x, y: 23 });
+        }
+        for (let x = 18; x <= 25; x++) {
+          blocks.push({ x: x, y: 6 });
+          blocks.push({ x: x, y: 23 });
+        }
+        for (let y = 11; y <= 18; y++) {
+          blocks.push({ x: 14, y: y });
+          blocks.push({ x: 15, y: y });
+        }
+      }
+
+      return blocks;
+    }
+
+    function getSafeStartPosition(mode) {
+      if (mode === 3) return { x: 6, y: 6 };
+      if (mode === 4) return { x: 14, y: 14 };
+      if (mode === 5) return { x: 8, y: 14 };
+      return { x: 15, y: 15 };
+    }
+
+    function initGame() {
+      const mode = getCurrentMode();
+      modeDescEl.textContent = modeDescriptions[mode];
+      highScoreEl.textContent = loadHighScore();
+
+      canvas.style.borderStyle = mode === 1 ? "dashed" : "solid";
+      canvas.style.borderColor = mode === 1 ? "#22c55e" : "#38bdf8";
+
+      obstacles = buildObstacles(mode);
+      const start = getSafeStartPosition(mode);
+
+      snake = [
+        { x: start.x, y: start.y },
+        { x: start.x - 1, y: start.y },
+        { x: start.x - 2, y: start.y }
+      ];
+
+      dx = 1;
+      dy = 0;
+      nextDx = 1;
+      nextDy = 0;
+      score = 0;
+      currentSpeed = parseInt(speedSelect.value, 10);
+      isGameOver = false;
+      isPaused = false;
+      scoreEl.textContent = score;
+
+      spawnFood();
+      drawGame();
+      startLoop();
+    }
+
+    function startLoop() {
+      if (gameLoop) clearInterval(gameLoop);
+      gameLoop = setInterval(updateGame, currentSpeed);
+    }
+
+    function changeMode() {
+      modeSelect.blur();
+      initGame();
+    }
+
+    function changeSpeed() {
+      speedSelect.blur();
+      currentSpeed = parseInt(speedSelect.value, 10);
+      if (!isGameOver) {
+        startLoop();
+      }
+      showSpeedToast("স্পিড: " + speedSelect.options[speedSelect.selectedIndex].text);
+    }
+
+    function resetGame() {
+      initGame();
+    }
+
+    function setDirection(dir) {
+      if (isGameOver || isPaused) return;
+      if (dir === "up" && dy !== 1) {
+        nextDx = 0;
+        nextDy = -1;
+      } else if (dir === "down" && dy !== -1) {
+        nextDx = 0;
+        nextDy = 1;
+      } else if (dir === "left" && dx !== 1) {
+        nextDx = -1;
+        nextDy = 0;
+      } else if (dir === "right" && dx !== -1) {
+        nextDx = 1;
+        nextDy = 0;
+      }
+    }
+
+    function togglePause() {
+      if (isGameOver) return;
+      isPaused = !isPaused;
+      if (isPaused) {
+        ctx.fillStyle = "rgba(2, 6, 23, 0.65)";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = "#38bdf8";
+        ctx.font = "bold 32px sans-serif";
+        ctx.textAlign = "center";
+        ctx.fillText("Paused (বিরতি)", canvas.width / 2, canvas.height / 2);
+      } else {
+        drawGame();
+      }
+    }
+
+    function isOccupied(x, y) {
+      for (let part of snake) {
+        if (part.x === x && part.y === y) return true;
+      }
+      for (let obs of obstacles) {
+        if (obs.x === x && obs.y === y) return true;
+      }
+      return false;
+    }
+
+    function spawnFood() {
+      let fx, fy;
+      do {
+        fx = Math.floor(Math.random() * tileCount);
+        fy = Math.floor(Math.random() * tileCount);
+      } while (isOccupied(fx, fy));
+
+      food = { x: fx, y: fy };
+    }
+
+    function updateGame() {
+      if (isGameOver || isPaused) return;
+
+      const mode = getCurrentMode();
+      dx = nextDx;
+      dy = nextDy;
+
+      let nextX = snake[0].x + dx;
+      let nextY = snake[0].y + dy;
+
+      if (mode === 1) {
+        if (nextX < 0) nextX = tileCount - 1;
+        else if (nextX >= tileCount) nextX = 0;
+
+        if (nextY < 0) nextY = tileCount - 1;
+        else if (nextY >= tileCount) nextY = 0;
+      } else {
+        if (nextX < 0 || nextX >= tileCount || nextY < 0 || nextY >= tileCount) {
+          gameOver();
+          return;
+        }
+      }
+
+      const head = { x: nextX, y: nextY };
+
+      for (let part of snake) {
+        if (head.x === part.x && head.y === part.y) {
+          gameOver();
+          return;
+        }
+      }
+
+      for (let obs of obstacles) {
+        if (head.x === obs.x && head.y === obs.y) {
+          gameOver();
+          return;
+        }
+      }
+
+      snake.unshift(head);
+
+      if (head.x === food.x && head.y === food.y) {
+        score += 10;
+        scoreEl.textContent = score;
+
+        const savedHigh = loadHighScore();
+        if (score > savedHigh) {
+          saveHighScore(score);
+          highScoreEl.textContent = score;
+        }
+
+        if (mode === 5 && currentSpeed > 45) {
+          currentSpeed -= 3;
+          startLoop();
+        }
+
+        spawnFood();
+      } else {
+        snake.pop();
+      }
+
+      drawGame();
+    }
+
+    function drawGrid() {
+      ctx.strokeStyle = "rgba(255, 255, 255, 0.03)";
+      ctx.lineWidth = 1;
+      for (let i = 0; i <= canvas.width; i += gridSize) {
+        ctx.beginPath();
+        ctx.moveTo(i, 0);
+        ctx.lineTo(i, canvas.height);
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.moveTo(0, i);
+        ctx.lineTo(canvas.width, i);
+        ctx.stroke();
+      }
+    }
+
+    function drawGame() {
+      ctx.fillStyle = "#020617";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      drawGrid();
+
+      obstacles.forEach((obs) => {
+        ctx.fillStyle = "#f59e0b";
+        ctx.fillRect(
+          obs.x * gridSize + 1,
+          obs.y * gridSize + 1,
+          gridSize - 2,
+          gridSize - 2
+        );
+      });
+
+      ctx.fillStyle = "#ef4444";
+      ctx.beginPath();
+      ctx.arc(
+        food.x * gridSize + gridSize / 2,
+        food.y * gridSize + gridSize / 2,
+        gridSize / 2.3,
+        0,
+        Math.PI * 2
+      );
+      ctx.fill();
+
+      snake.forEach((part, index) => {
+        ctx.fillStyle = index === 0 ? "#4ade80" : "#22c55e";
+        ctx.fillRect(
+          part.x * gridSize + 1,
+          part.y * gridSize + 1,
+          gridSize - 2,
+          gridSize - 2
+        );
+      });
+
+      if (speedNotice) {
+        ctx.fillStyle = "rgba(15, 23, 42, 0.85)";
+        ctx.fillRect(canvas.width / 2 - 115, 14, 230, 34);
+        ctx.strokeStyle = "#38bdf8";
+        ctx.lineWidth = 1;
+        ctx.strokeRect(canvas.width / 2 - 115, 14, 230, 34);
+
+        ctx.fillStyle = "#38bdf8";
+        ctx.font = "bold 15px sans-serif";
+        ctx.textAlign = "center";
+        ctx.fillText(speedNotice, canvas.width / 2, 36);
+      }
+    }
+
+    function gameOver() {
+      isGameOver = true;
+      clearInterval(gameLoop);
+
+      ctx.fillStyle = "rgba(2, 6, 23, 0.85)";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      ctx.fillStyle = "#f87171";
+      ctx.font = "bold 40px sans-serif";
+      ctx.textAlign = "center";
+      ctx.fillText("Game Over!", canvas.width / 2, canvas.height / 2 - 28);
+
+      ctx.fillStyle = "#f8fafc";
+      ctx.font = "20px sans-serif";
+      ctx.fillText("আপনার স্কোর: " + score, canvas.width / 2, canvas.height / 2 + 12);
+
+      ctx.fillStyle = "#4ade80";
+      ctx.font = "bold 17px sans-serif";
+      ctx.fillText("Enter বা বাটন চাপুন — নতুন করে শুরু করতে", canvas.width / 2, canvas.height / 2 + 52);
+    }
+
+    // টাচ বাটন ইভেন্ট বাইন্ডিং (ফোন ও ট্যাবলেটের জন্য)
+    function bindTouchAction(id, handler) {
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.addEventListener("pointerdown", (e) => {
+        e.preventDefault();
+        handler();
+      });
+    }
+
+    bindTouchAction("btnUp", () => setDirection("up"));
+    bindTouchAction("btnDown", () => setDirection("down"));
+    bindTouchAction("btnLeft", () => setDirection("left"));
+    bindTouchAction("btnRight", () => setDirection("right"));
+    bindTouchAction("btnSpeedDown", () => setSpeedByIndex(speedSelect.selectedIndex - 1));
+    bindTouchAction("btnSpeedUp", () => setSpeedByIndex(speedSelect.selectedIndex + 1));
+    bindTouchAction("btnPause", () => togglePause());
+
+    // ক্যানভাসে সোয়াইপ করে সাপ ঘোরানোর সুবিধা
+    let touchStartX = 0;
+    let touchStartY = 0;
+
+    canvas.addEventListener("touchstart", (e) => {
+      if (e.touches.length > 0) {
+        touchStartX = e.touches[0].clientX;
+        touchStartY = e.touches[0].clientY;
+      }
+    }, { passive: true });
+
+    canvas.addEventListener("touchmove", (e) => {
+      if (e.touches.length === 0) return;
+      const diffX = e.touches[0].clientX - touchStartX;
+      const diffY = e.touches[0].clientY - touchStartY;
+      const threshold = 24;
+
+      if (Math.abs(diffX) > threshold || Math.abs(diffY) > threshold) {
+        if (Math.abs(diffX) > Math.abs(diffY)) {
+          setDirection(diffX > 0 ? "right" : "left");
+        } else {
+          setDirection(diffY > 0 ? "down" : "up");
+        }
+        touchStartX = e.touches[0].clientX;
+        touchStartY = e.touches[0].clientY;
+      }
+    }, { passive: true });
+
+    document.addEventListener("keydown", (e) => {
+      const key = e.key.toLowerCase();
+
+      if (["arrowup", "arrowdown", "arrowleft", "arrowright", " ", "enter"].includes(key)) {
+        e.preventDefault();
+      }
+
+      if (key === "enter" && isGameOver) {
+        resetGame();
+        return;
+      }
+
+      if (key === "+" || key === "=") {
+        setSpeedByIndex(speedSelect.selectedIndex + 1);
+        return;
+      } else if (key === "-" || key === "_") {
+        setSpeedByIndex(speedSelect.selectedIndex - 1);
+        return;
+      } else if (key >= "1" && key <= "9") {
+        setSpeedByIndex(parseInt(key, 10) - 1);
+        return;
+      }
+
+      if (key === " ") {
+        togglePause();
+        return;
+      }
+
+      if (key === "arrowup" || key === "w") setDirection("up");
+      else if (key === "arrowdown" || key === "s") setDirection("down");
+      else if (key === "arrowleft" || key === "a") setDirection("left");
+      else if (key === "arrowright" || key === "d") setDirection("right");
+    });
+
+    initGame();
+  </script>
+
+</body>
+</html>
